@@ -1,14 +1,27 @@
-from pwgen.core import generate_password, DEFAULT_ALPHABET
+from passgen.core import generate_password
 import pytest
 
-def test_length():
-    assert len(generate_password(20)) == 20
+# тест 1 фильтр только цифры                                            
+# при отключении букв и символов пароль обязан состоять из одних цифр
+def test_filter_digits():
+    pwd = generate_password(
+        30,
+        use_lower=False,
+        use_upper=False,
+        use_digits=True,
+        use_symbols=False,
+    )
+    assert pwd.isdigit()
 
-@pytest.mark.parametrize("bad", [3, 129])
-def test_invalid_length(bad):
+
+# тест 2 ошибка при пустом алфавите                                        
+# если отключить все группы символов, генератор должен вывести ValueError
+def test_empty_alphabet():
     with pytest.raises(ValueError):
-        generate_password(bad)
-
-def test_chars_subset():
-    pwd = generate_password(50)
-    assert set(pwd) <= set(DEFAULT_ALPHABET)
+        generate_password(
+            10,
+            use_lower=False,
+            use_upper=False,
+            use_digits=False,
+            use_symbols=False,
+        )
