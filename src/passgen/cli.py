@@ -1,5 +1,7 @@
 import argparse
+import sys                        
 from passgen.core import generate_password
+
 
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
@@ -25,20 +27,34 @@ def build_parser() -> argparse.ArgumentParser:
         help="исключить похожие символы 0 O I l 1",
     )
 
+    p.add_argument(
+        "--copy",
+        action="store_true",
+        help="скопировать пароль в буфер обмена",
+    )
     return p
 
 def main() -> None:
     args = build_parser().parse_args()
-    print(
-        generate_password(
-            length=args.length,
-            use_lower=not args.no_lower,
-            use_upper=not args.no_upper,
-            use_digits=not args.no_digits,
-            use_symbols=not args.no_symbols,
-            exclude_similar=args.exclude_similar,
-        )
+
+    password = generate_password(
+        length=args.length,
+        use_lower=not args.no_lower,
+        use_upper=not args.no_upper,
+        use_digits=not args.no_digits,
+        use_symbols=not args.no_symbols,
+        exclude_similar=args.exclude_similar,
     )
+
+    print(password)
+
+    if args.copy:
+        try:
+            import pyperclip                   
+            pyperclip.copy(password)
+            print("Пароль скопирован в буфер обмена.")
+        except pyperclip.PyperclipException:
+            print("Буфер обмена недоступен", file=sys.stderr)
 
 if __name__ == "__main__":
     main()

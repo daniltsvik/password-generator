@@ -2,7 +2,6 @@ import subprocess
 import sys
 import textwrap
 
-
 def run_cli(*args: str) -> str:
     res = subprocess.run(
         [sys.executable, "-m", "passgen.cli", *args],
@@ -28,3 +27,10 @@ def test_cli_default_length():
 def test_cli_custom_flags():
     out = run_cli("-l", "12", "--no-symbols")
     assert len(out) == 12 and out.isalnum()
+
+# тест 3 копирование
+def test_cli_copy():
+    out = run_cli("-l", "8", "--copy").splitlines()
+
+    assert len(out[0]) == 8                 
+    assert "скопирован в буфер" in out[1]   
